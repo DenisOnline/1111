@@ -1,29 +1,3 @@
-# import tkinter as tk
-#
-# root = tk.Tk()
-# root.title("First Window")
-# root.geometry("600x400")
-# root.iconbitmap("file.ico")
-# # root.resizable(False, False)
-# root.minsize(400, 300)
-# root.maxsize(700, 500)
-#
-# lable_1 = tk.Label(text="Hello",
-#                    font=("Arial", 20, "bold"),
-#                    bg="red",
-#                    fg="yellow",
-#                    width=10,
-#                    height=5,
-#                    # padx=85,
-#                    # pady=50,
-#                    anchor="e",
-#                    relief=tk.RAISED,
-#                    bd=20,
-#                    justify=tk.RIGHT)
-# lable_1.pack()
-#
-# root.mainloop()
-
 import tkinter as tk
 
 bomb = 100
@@ -32,20 +6,16 @@ press_return = True
 
 root = tk.Tk()
 root.title("Game")
-root.geometry("600x600")
+root.geometry("600x600+500+400")
 root.iconbitmap("bomb.ico")
 
-label = tk.Label(root,
-                 text='Press [enter] to start the game',
-                 font=('Comic Sans MS', 12))
-fuse_label = tk.Label(root,
-                      text=f'Fuse: {str(bomb)}',
-                      font=('Comic Sans MS', 14))
-score_label = tk.Label(root,
-                       text=f'Score: {str(score)}',
-                       font=('Comic Sans MS', 14))
+label = tk.Label(root, text='Press [enter] to start the game', font=('Comic Sans MS', 12))
 label.pack()
+
+fuse_label = tk.Label(root, text=f'Fuse: {str(bomb)}', font=('Comic Sans MS', 14))
 fuse_label.pack()
+
+score_label = tk.Label(root, text=f'Score: {str(score)}', font=('Comic Sans MS', 14))
 score_label.pack()
 
 img_1 = tk.PhotoImage(file="1.gif")
@@ -56,28 +26,66 @@ img_4 = tk.PhotoImage(file="4.gif")
 bomb_label = tk.Label(image=img_1)
 bomb_label.pack()
 
+
 def update_display():
-    pass
+    global bomb
+    global score
+    if bomb >= 80:
+        bomb_label.config(image=img_1)
+    elif 50 <= bomb < 80:
+        bomb_label.config(image=img_2)
+    elif 0 < bomb < 50:
+        bomb_label.config(image=img_3)
+    else:
+        bomb_label.config(image=img_4)
+    fuse_label.config(text='Fuse: ' + str(bomb))
+    score_label.config(text='Score: ' + str(score))
+    fuse_label.after(100, update_display)
 
 
 def is_alive():
-    pass
+    global bomb
+    global press_return
+    if bomb <= 0:
+        bomb = 0
+        label.config(text='Bang! Bang! Bang!')
+        press_return = True
+        return False
+    else:
+        return True
 
 
 def update_bomb():
-    pass
+    global bomb
+    bomb -= 5
+    if is_alive():
+        fuse_label.after(500, update_bomb)
 
 
 def update_score():
-    pass
+    global score
+    if is_alive():
+        score += 1
+        score_label.after(3000, update_score)
 
 
 def start(event):
-    pass
+    global press_return
+    if not press_return:
+        pass
+    else:
+        update_bomb()
+        update_score()
+        update_display()
+        label.config(text='')
+        press_return = False
 
 
 def click():
-    pass
+    global bomb
+    if is_alive():
+        bomb += 1
+
 
 click_button = tk.Button(root,
                          text='Click me',
@@ -88,5 +96,4 @@ click_button = tk.Button(root,
                          command=click)
 click_button.pack()
 root.bind('<Return>', start)
-
 root.mainloop()
